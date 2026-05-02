@@ -1,0 +1,5 @@
+﻿.env
+*.key
+.claude/
+.antigravity/
+node_modules/
