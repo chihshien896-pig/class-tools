@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三角形的高：動態互動教學</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>三角形的高 <span class="subtitle">互動教學工具</span></h1>
+            <p>觀察如何使用直角三角板，正確畫出三角形的高。</p>
+        </header>
+
+        <main>
+            <div class="canvas-area">
+                <div class="canvas-wrapper">
+                    <div class="success-badge" id="successBadge">✨ 成功畫出三角形的高！</div>
+                    <canvas id="teachingCanvas"></canvas>
+                </div>
+
+                <div class="controls-bar">
+                    <div class="selector-group">
+                        <label for="baseSelect">選擇底邊：</label>
+                        <select id="baseSelect">
+                            <option value="1">邊 BC</option>
+                            <option value="2">邊 CA</option>
+                            <option value="0">邊 AB</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button id="btnAnimate" class="btn-primary">播放示範動畫</button>
+                        <button id="btnReset" class="btn-secondary">重設三角形</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <aside class="instruction-panel">
+                <div class="step-card active" id="step1">
+                    <span class="step-num">01</span>
+                    <h3>選擇底邊</h3>
+                    <p>選擇一條邊作為三角形的底。</p>
+                </div>
+                <div class="step-card" id="step2">
+                    <span class="step-num">02</span>
+                    <h3>對齊三角板</h3>
+                    <p>將直角三角板的一條直角邊對準底邊。</p>
+                </div>
+                <div class="step-card" id="step3">
+                    <span class="step-num">03</span>
+                    <h3>平移至頂點</h3>
+                    <p>沿著底邊平移三角板，直到另一條直角邊通過對應的頂點。</p>
+                </div>
+                <div class="step-card" id="step4">
+                    <span class="step-num">04</span>
+                    <h3>畫出垂直線</h3>
+                    <p>連接頂點到底邊的垂直距離，這就是三角形的高。</p>
+                </div>
+            </aside>
+        </main>
+
+        <footer>
+            <p>提示：你可以拖曳三角形的頂點來改變形狀。</p>
+        </footer>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
