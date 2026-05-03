@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>軍艦棋數學對戰 | Battleship Math Duel</title>
+    <meta name="description" content="結合數學運算的即時對戰軍艦棋，讓學生在遊戲中提升運算速度。">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <!-- 頂部資訊欄 -->
+        <header class="game-header">
+            <div class="logo">
+                <span class="glitch" data-text="BATTLESHIP">BATTLESHIP</span>
+                <span class="sub-logo">MATH DUEL</span>
+            </div>
+            <div class="room-info" id="room-display">
+                <span class="label">ROOM:</span>
+                <span class="value" id="room-id">---</span>
+            </div>
+        </header>
+
+        <!-- 主要遊戲區域 -->
+        <main class="game-main">
+            <!-- 老師管理介面 / 房間建立 (初始狀態) -->
+            <section id="lobby-screen" class="screen active">
+                <div class="panel glass-panel">
+                    <h2>建立或加入對戰房間</h2>
+                    <div class="tabs">
+                        <button id="tab-teacher" class="tab-btn active">我是老師</button>
+                        <button id="tab-student" class="tab-btn">我是學生</button>
+                    </div>
+
+                    <!-- 老師區域 -->
+                    <div id="teacher-controls" class="tab-content active">
+                        <div class="form-group">
+                            <label for="math-category">選擇數學題型</label>
+                            <select id="math-category">
+                                <optgroup label="五年級課程">
+                                    <option value="5-1">因數與倍數</option>
+                                    <option value="5-2">異分母分數加減</option>
+                                    <option value="5-3">多位小數運算</option>
+                                    <option value="5-4">百分率與比率</option>
+                                    <option value="5-5">未知數運算</option>
+                                </optgroup>
+                                <optgroup label="六年級課程">
+                                    <option value="6-1">GCD 與 LCM</option>
+                                    <option value="6-2">分數除法</option>
+                                    <option value="6-3">小數除法</option>
+                                    <option value="6-4">比與比值</option>
+                                    <option value="6-5">速率計算</option>
+                                    <option value="6-6">圓周長與圓面積</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <button id="btn-create-room" class="btn-primary">進入作戰指揮部</button>
+                    </div>
+
+                    <div id="student-controls" class="tab-content">
+                        <div class="form-group">
+                            <label for="room-input">輸入房間代碼</label>
+                            <input type="text" id="room-input" placeholder="例如: X7A2B" maxlength="6">
+                        </div>
+                        <button id="btn-join-room" class="btn-primary">進入戰場</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 老師指揮部：管理多個房間 (隱藏) -->
+            <section id="dashboard-screen" class="screen">
+                <div class="dashboard-header glass-panel">
+                    <div class="header-main">
+                        <h2>作戰指揮部</h2>
+                        <div id="dashboard-status-summary" class="status-summary">
+                            正在載入房間資訊...
+                        </div>
+                    </div>
+                    <div class="dashboard-controls">
+                        <div class="batch-create">
+                            <span>數量:</span>
+                            <input type="number" id="batch-count" value="1" min="1" max="15">
+                            <button id="btn-batch-create" class="btn-primary">批量開設</button>
+                        </div>
+                        <button id="btn-print-qrs" class="btn-success">列印 QR Code</button>
+                        <button id="btn-close-all" class="btn-danger">全部關閉</button>
+                    </div>
+                </div>
+                <div id="rooms-list" class="rooms-grid">
+                    <!-- 房間卡片將由 JS 產生 -->
+                </div>
+            </section>
+
+            <!-- 準備階段：放置軍艦 (隱藏) -->
+            <section id="setup-screen" class="screen">
+                <div class="setup-container">
+                    <div class="grid-container">
+                        <h3>配置你的艦隊</h3>
+                        <div id="my-setup-grid" class="grid battleship-grid"></div>
+                    </div>
+                    <div class="controls-panel glass-panel">
+                        <p class="instruction">點擊格子放置軍艦，或點擊軍艦旋轉方向。</p>
+                        <div class="ship-inventory" id="ship-list">
+                            <!-- 軍艦列表將由 JS 產生 -->
+                        </div>
+                        <button id="btn-ready" class="btn-success" disabled>準備就緒</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 對戰階段 (隱藏) -->
+            <section id="battle-screen" class="screen">
+                <div class="battle-layout">
+                    <!-- 自己的棋盤 -->
+                    <div class="side-panel">
+                        <h4>我的防禦陣地</h4>
+                        <div id="my-battle-grid" class="grid battleship-grid mini"></div>
+                    </div>
+
+                    <!-- 數學挑戰區 (核心) -->
+                    <div class="center-panel">
+                        <div id="math-challenge" class="math-panel glass-panel">
+                            <div class="timer-bar"><div id="cooldown-progress"></div></div>
+                            <div class="question-container">
+                                <div id="question-text" class="question">載入中...</div>
+                                <input type="text" id="answer-input" placeholder="輸入答案" autocomplete="off">
+                                <button id="btn-submit-answer">確認</button>
+                            </div>
+                            <div class="ammo-status">
+                                彈藥庫: <span id="ammo-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 對手的棋盤 -->
+                    <div class="side-panel">
+                        <h4>敵軍海域 (點擊攻擊)</h4>
+                        <div id="enemy-battle-grid" class="grid battleship-grid active-target"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 遊戲結束畫面 (隱藏) -->
+            <div id="game-over-overlay" class="overlay">
+                <div class="result-panel glass-panel">
+                    <h1 id="winner-text">VICTORY</h1>
+                    <p id="winner-name">老師 (HOST) 贏得了勝利！</p>
+                    <button onclick="location.reload()" class="btn-primary">回首頁</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- 狀態列 -->
+        <footer class="game-footer">
+            <div id="status-message">系統就緒...</div>
+            <div id="connection-status" class="online">ONLINE</div>
+        </footer>
+    </div>
+
+    <!-- Firebase SDK & App Logic -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
