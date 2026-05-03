@@ -445,11 +445,11 @@ class GameApp {
             if (data) {
                 this.renderRoomCard(roomId, data, list);
             } else {
-                // 如果數據還沒載入，顯示載入中卡片
-                const card = document.createElement('div');
-                card.className = 'room-card loading';
-                card.innerHTML = `<div class="id">${roomId}</div><div class="players-info">數據載入中...</div>`;
-                list.appendChild(card);
+                // 如果數據還沒載入，顯示載入中
+                const item = document.createElement('div');
+                item.className = 'room-item loading';
+                item.innerHTML = `<div class="room-id">ID: ${roomId}</div><div class="player-status">數據載入中...</div>`;
+                list.appendChild(item);
                 
                 // 主動嘗試重新監聽，防止遺漏
                 this.listenToRoom(roomId);
@@ -458,9 +458,9 @@ class GameApp {
     }
 
     renderRoomCard(roomId, data, container) {
-        const card = document.createElement('div');
+        const item = document.createElement('div');
         const status = data.config?.status || 'waiting';
-        card.className = `room-card status-${status}`;
+        item.className = `room-item status-${status}`;
         
         const hostJoined = data.players?.host ? '👤' : '❌';
         const hostReady = data.players?.host?.ready ? '✅' : '⏳';
@@ -470,23 +470,24 @@ class GameApp {
         const joinUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}`;
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(joinUrl)}`;
 
-        card.innerHTML = `
-            <div class="status-badge">${status.toUpperCase()}</div>
-            <div class="id">${roomId}</div>
-            <div class="qr-box">
-                <img src="${qrUrl}" alt="QR Code" onclick="window.open('${joinUrl}', '_blank')">
-                <p>點擊放大</p>
+        item.innerHTML = `
+            <div class="room-id">ROOM: <strong>${roomId}</strong></div>
+            <div class="room-status-badge status-${status}">${status.toUpperCase()}</div>
+            <div class="player-status">
+                <span>玩家1: ${hostJoined}${hostReady}</span>
+                <span>玩家2: ${studentJoined}${studentReady}</span>
             </div>
-            <div class="players-info">
-                <div>玩家1: ${hostJoined} ${hostReady}</div>
-                <div>玩家2: ${studentJoined} ${studentReady}</div>
+            <!-- QR Code 僅供列印使用，畫面上隱藏 -->
+            <div class="qr-print-only">
+                <img src="${qrUrl}" alt="QR Code">
+                <p>掃描進入房間 ${roomId}</p>
             </div>
-            <div class="card-actions">
+            <div class="item-actions">
                 ${status === 'waiting' ? `<button class="btn-primary btn-sm" onclick="app.openRoom('${roomId}')">開啟</button>` : ''}
                 <button class="btn-danger btn-sm" onclick="app.deleteRoom('${roomId}')">刪除</button>
             </div>
         `;
-        container.appendChild(card);
+        container.appendChild(item);
     }
 
     async openRoom(roomId) {
